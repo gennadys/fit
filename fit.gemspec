@@ -15,6 +15,6 @@ Gem::Specification.new do |s|
   s.test_files    = Dir["spec/**/*"]
   s.require_paths = ["lib"]
 
-  s.add_dependency('bindata')
+  s.add_dependency('bindata', '~> 1.4')
   s.add_dependency('activesupport')
 end
