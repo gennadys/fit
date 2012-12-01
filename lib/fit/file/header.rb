@@ -3,7 +3,7 @@ module Fit
     class Header < BinData::Record
       endian :little
 
-      uint8  :header_size, :value => 12, :check_value => 12
+      uint8  :header_size
       uint8  :protocol_version
       uint16 :profile_version
       uint32 :data_size

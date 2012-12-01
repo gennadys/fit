@@ -25,8 +25,8 @@ module Fit
           end
         when 0
           definition = @@definitions[@header.local_message_type.snapshot]
-          raise "No definition for local message type: #{@header.local_message_type}" if definition.nil?
-          definition.read(io)
+          # raise "No definition for local message type: #{@header} in #{@@definitions}" if definition.nil?
+          definition.read(io) unless definition.nil?
         end
 
         self
