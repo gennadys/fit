@@ -18,15 +18,19 @@ module Fit
       def read(io)
         @header = RecordHeader.read(io)
 
-        @content = case @header.message_type.snapshot
-        when 1
-          Definition.read(io).tap do |definition|
-            @@definitions[@header.local_message_type.snapshot] = Data.generate(definition)
+        begin
+          @content = case @header.message_type.snapshot
+          when 1
+            Definition.read(io).tap do |definition|
+              @@definitions[@header.local_message_type.snapshot] = Data.generate(definition)
+            end
+          when 0
+            definition = @@definitions[@header.local_message_type.snapshot]
+            # raise "No definition for local message type: #{@header} in #{@@definitions}" if definition.nil?
+            definition.read(io) unless definition.nil?
           end
-        when 0
-          definition = @@definitions[@header.local_message_type.snapshot]
-          # raise "No definition for local message type: #{@header} in #{@@definitions}" if definition.nil?
-          definition.read(io) unless definition.nil?
+        rescue
+          @content = nil
         end
 
         self
