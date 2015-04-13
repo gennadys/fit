@@ -17,6 +17,11 @@ module Fit
                       { :name => "field_#{field_definition_number.snapshot}", :scale => nil }
         end
 
+        def dyn_data
+          @dyn_data ||= Definitions.get_dynamic_fields(parent.parent.global_message_number.snapshot,
+                                                       field_definition_number.snapshot)
+        end
+
         def name
           data[:name]
         end
@@ -27,6 +32,10 @@ module Fit
 
         def scale
           data[:scale]
+        end
+
+        def real_type
+          data[:type]
         end
 
         def type
@@ -46,10 +55,15 @@ module Fit
           when 6
             build_int_type 32, false
           when 7
-            "stringz"
+            # some cases found where string has the max field length
+            # and is therefore not null terminated
+            @length = 1
+            "string"
           when 8
+            @length = 4
             "float"
           when 9
+            @length = 8
             "double"
           when 10 # uint8z
             build_int_type 8, false
@@ -64,9 +78,21 @@ module Fit
           end
         end
 
+        # field_size is in byte
+        def size
+          field_size
+        end
+        
+        # return the length in byte of the given type
+        def length
+          @length
+        end
+
         private
 
         def build_int_type(length, signed)
+          # @length is in byte not in bits, so divide by 8
+          @length = length / 8
           (signed ? '' : 'u') << 'int' << length.to_s
         end
       end
